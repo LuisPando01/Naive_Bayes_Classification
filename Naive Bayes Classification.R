@@ -11,6 +11,11 @@ sms_raw$type <- factor(sms_raw$type)
 str(sms_raw$type)
 table(sms_raw$type)
 
+#Package
+install.packages("tm")
+library(tm) #For text mining
+
+#Save the data
 sms_corpus <- VCorpus(VectorSource(sms_raw$text))
 
 #Verify the data
@@ -38,6 +43,10 @@ sms_corpus_clean <- tm_map(sms_corpus_clean,removeWords, stopwords())
 
 #Remove punctuation and other characters
 sms_corpus_clean <- tm_map(sms_corpus_clean,removePunctuation)
+
+#Package
+install.packages("SnowballC")
+library(SnowballC) #For the wordStem function, works together with "tm"
 
 #Stemming, transforming words so that they are not conjugated (transformed)
 wordStem(c("learn", "learned", "learning", "learns"))
@@ -91,10 +100,20 @@ prop.table(table(sms_train))
 prop.table(table(sms_test))
 
 ###TRAINING THE MODEL###
+
+#Package
+install.packages("e1071")
+library(e1071) #For the naiveBayes function
+
 #Create the model (use Bayes' theorem)
 sms_classifier <- naiveBayes(sms_train, sms_train_labels)
 #Evaluate the model
 sms_test_pred <- predict(sms_classifier, sms_test)
+
+#Package
+install.packages("gmodels")
+library(gmodels) #For the CrossTable function
+
 #Model results
 CrossTable(sms_test_pred, sms_test_labels,
            prop.chisq = FALSE, prop.t = FALSE,
@@ -165,4 +184,3 @@ abline(a = 0, b = 1, lwd = 2, lty = 2)
 perf.auc <- performance(pred, measure = "auc")
 str(perf.auc)
 unlist(perf.auc@y.values)
-
